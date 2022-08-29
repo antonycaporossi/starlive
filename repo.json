@@ -1,0 +1,8 @@
+{
+    "name": "Starlive",
+    "description": "Cloudstream Starlive",
+    "manifestVersion": 1,
+    "pluginLists": [
+      "https://raw.githubusercontent.com/antonycaporossi/starlive/builds/plugins.json"
+    ]
+}

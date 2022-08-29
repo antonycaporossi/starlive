@@ -1,0 +1,38 @@
+[
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=fullmatchtv.com&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/antonycaporossi/starlive",
+        "fileSize": 8517,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 1,
+        "internalName": "FullMatchTVProvider",
+        "url": "https://raw.githubusercontent.com/antonycaporossi/starlive/builds/FullMatchTVProvider.cs3",
+        "name": "FullMatchTVProvider"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=starlive.xyz&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/antonycaporossi/starlive",
+        "fileSize": 13070,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 1,
+        "internalName": "StarliveProvider",
+        "url": "https://raw.githubusercontent.com/antonycaporossi/starlive/builds/StarliveProvider.cs3",
+        "name": "StarliveProvider"
+    }
+]

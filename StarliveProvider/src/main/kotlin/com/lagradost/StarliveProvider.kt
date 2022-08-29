@@ -25,13 +25,11 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
             val shows = it.select("tr.ita").map {
                 val href = it.selectFirst("a")!!.attr("href")
                 val name = it.selectFirst("a")!!.text()
-                val posterurl = fixUrl(it.selectFirst("a > img")!!.attr("src"))
                 LiveSearchResponse(
                     name,
                     href,
                     this@StarliveProvider.name,
-                    TvType.Live,
-                    posterurl,
+                    TvType.Live
                 )
             }
             HomePageList(

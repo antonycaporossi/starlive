@@ -1,8 +1,7 @@
 package com.lagradost
 
-import com.lagradost.cloudstream3.TvType
-import com.lagradost.cloudstream3.MainAPI
-import com.lagradost.cloudstream3.SearchResponse
+import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 
 class StarliveProvider : MainAPI() { // all providers must be an instance of MainAPI
     override var lang = "it"

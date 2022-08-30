@@ -1,12 +1,7 @@
 package com.lagradost
 
-import android.widget.Toast
-
-
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import com.lagradost.cloudstream3.CommonActivity.showToast
-
 
 class StarliveProvider : MainAPI() { // all providers must be an instance of MainAPI
     override var lang = "it"
@@ -51,10 +46,11 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         val document = app.get(url).document
         val truelink = document.selectFirst("iframe")!!.attr("src").replace("//", "https://")
         return LiveStreamLoadResponse(
-            truelink,
+            "test",
             url,
             this.name,
-            url
+            url,
+            plot = truelink
         )
 
 

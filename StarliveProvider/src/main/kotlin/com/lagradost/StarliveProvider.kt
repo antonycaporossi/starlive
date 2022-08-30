@@ -71,7 +71,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         callback(
             ExtractorLink(
                 this.name,
-                button.text(),
+                "test2",
                 streamurl,
                 truelink,
                 quality = 0,

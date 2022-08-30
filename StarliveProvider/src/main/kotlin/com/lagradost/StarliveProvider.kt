@@ -45,12 +45,13 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         // Nell'app qui siamo nella pagina dettaglio
         val document = app.get(url).document
         val truelink = document.selectFirst("iframe")!!.attr("src").replace("//", "https://")
+        val newpage = app.get(truelink).document
         return LiveStreamLoadResponse(
             "test",
             url,
             this.name,
             url,
-            plot = truelink
+            plot = newpage.select("script")[6].childNode(0).toString()
         )
 
 

@@ -41,7 +41,8 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         })
     }
     override suspend fun load(url: String): LoadResponse {
-
+        // Questa è la pagina con l'iframe di starlive
+        // Nell'app qui siamo nella pagina dettaglio
         val document = app.get(url).document
         return LiveStreamLoadResponse(
             "test",
@@ -51,6 +52,43 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         )
 
 
+    }
+    private suspend fun extractVideoLinks(
+        url: String,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        val document = app.get(url).document
+        val truelink = document.selectFirst("iframe")!!.attr("src")
+        //val link1 = button.attr("data-link")
+        //val doc2 = app.get(link1).document
+        //val truelink = doc2.selectFirst("iframe")!!.attr("src")
+        val newpage = app.get(truelink).document
+        val streamurl = Regex(""""((.|\n)*?).";""").find(
+            getAndUnpack(
+                newpage.select("script")[6].childNode(0).toString()
+            ))!!.value.replace("""src="""", "").replace(""""""", "").replace(";", "")
+
+        callback(
+            ExtractorLink(
+                this.name,
+                button.text(),
+                streamurl,
+                truelink,
+                quality = 0,
+                true
+            )
+        )
+    }
+
+    override suspend fun loadLinks(
+        data: String,
+        isCasting: Boolean,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        extractVideoLinks(data, callback)
+
+        return true
     }
 
 

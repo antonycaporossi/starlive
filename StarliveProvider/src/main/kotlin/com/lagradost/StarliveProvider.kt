@@ -46,14 +46,17 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         val document = app.get(url).document
         val truelink = document.selectFirst("iframe")!!.attr("src").replace("//", "https://")
         val newpage = app.get(truelink).document
+        val streamurl = Regex(""""((.|\n)*?).";""").find(
+            getAndUnpack(
+                newpage.select("script")[6].childNode(0).toString()
+            ))!!.value.replace("""src="""", "").replace(""""""", "").replace(";", "")
         return LiveStreamLoadResponse(
             "test",
             url,
             this.name,
             url,
-            plot = newpage.select("script")[6].childNode(0).toString()
+            plot = streamurl
         )
-
 
     }
     private suspend fun extractVideoLinks(

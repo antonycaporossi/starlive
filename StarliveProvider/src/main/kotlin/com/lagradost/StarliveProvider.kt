@@ -4,6 +4,8 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
+import org.jsoup.nodes.Element
+
 
 class StarliveProvider : MainAPI() { // all providers must be an instance of MainAPI
     override var lang = "it"
@@ -45,15 +47,25 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         "bel" to "\uD83C\uDDE7\uD83C\uDDEA",
         "fin" to "\uD83C\uDDEB\uD83C\uDDEE"
     )
-    
+
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(mainUrl).document
-        val sections = document.select("div.panel-group .panel.panel-default")
+        val sections = document.select("#accordion > div")
         val sections_dates = document.select("div.panel-group .panel.panel-default")
-       
-        if (sections.isEmpty()) throw ErrorLoadingException()
+        val mapWithDuplicateKeys=mutableListOf<Pair<String, Element>>()
+        var date: String = ""
+        sections.forEachIndexed { index: Int, it ->
+            if(it.tagName() == "h3"){
+                date = it.text()+index.toString()
+            }
+            mapWithDuplicateKeys.add(date to it)
+        }
+        if (mapWithDuplicateKeys.isEmpty()) throw ErrorLoadingException()
 
-        return HomePageResponse(sections.mapIndexed { idx, it ->
+        return HomePageResponse(sections.map { /*x*/it  ->
+            /*val date = x.first
+            val it = x.second*/
             val poster = fixUrl(it.selectFirst("h4")!!.attr("style").replace("background-image: url(", "").replace(");", ""))
             val categoryname = it.selectFirst("h4 a")!!.text()
             val shows = it.select("table tr").not("tr[class='']").not(".audio").filter{it -> it.select("a").isNotEmpty()}.map {
@@ -77,7 +89,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
                 )
             }
             HomePageList(
-                idx.toString() + " - "+ categoryname,
+                categoryname + date,
                 shows,
                 isHorizontalImages = true
             )
@@ -107,6 +119,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         val lang: String = ""
     )
 
+    
     private suspend fun parseIframeUrl(url: String, ref_truelink: String): Pair<String, String>{
 
         return when{

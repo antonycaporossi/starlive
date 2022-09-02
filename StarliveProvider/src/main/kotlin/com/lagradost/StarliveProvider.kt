@@ -51,21 +51,22 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(mainUrl).document
-        val sections = document.select("#accordion > div")
-        val sections_dates = document.select("div.panel-group .panel.panel-default")
-        val mapWithDuplicateKeys=mutableListOf<Pair<String, Element>>()
-        var date: String = ""
-        sections.forEachIndexed { index: Int, it ->
-            if(it.tagName() == "h3"){
-                date = it.text()+index.toString()
-            }
-            mapWithDuplicateKeys.add(date to it)
-        }
-        if (mapWithDuplicateKeys.isEmpty()) throw ErrorLoadingException()
 
-        return HomePageResponse(sections.map { /*x*/it  ->
-            /*val date = x.first
-            val it = x.second*/
+        val elements = document.select("#accordion > div, #accordion > h3")
+
+        val groupElements=mutableListOf<Pair<String, Element>>()
+        var date: String = ""
+        elements.forEachIndexed { index: Int, it ->
+            if(it.hasClass("tit")){
+                date = it.text()+index.toString()
+            } else{
+                groupElements.add(date to it)
+            }
+        }
+        if (groupElements.isEmpty()) throw ErrorLoadingException()
+
+        return HomePageResponse(groupElements.map { element  ->
+            val (date, it) = element
             val poster = fixUrl(it.selectFirst("h4")!!.attr("style").replace("background-image: url(", "").replace(");", ""))
             val categoryname = it.selectFirst("h4 a")!!.text()
             val shows = it.select("table tr").not("tr[class='']").not(".audio").filter{it -> it.select("a").isNotEmpty()}.map {
@@ -81,7 +82,8 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
                         poster,
                         channelName,
                         orario = evento.first(),
-                        lang = lang
+                        lang = lang,
+                        date = date
                     ).toJson(),
                     this@StarliveProvider.name,
                     TvType.Live,
@@ -89,7 +91,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
                 )
             }
             HomePageList(
-                categoryname + date,
+                "$categoryname | $date",
                 shows,
                 isHorizontalImages = true
             )
@@ -106,7 +108,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
             loadData.url,
             this.name,
             loadData.url,
-            plot = "Ore: "+loadData.orario+" - Canale: "+loadData.channelName,
+            plot = "Data: " + loadData.date + " | Ore: " + loadData.orario + "- Canale: "+ loadData.channelName,
             posterUrl = loadData.poster
         )
     }
@@ -116,7 +118,8 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         val poster: String = "",
         val channelName: String = "",
         val orario: String = "",
-        val lang: String = ""
+        val lang: String = "",
+        val date: String = ""
     )
 
     
@@ -180,7 +183,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         callback(
             ExtractorLink(
                 source = this.name,
-                name = sourceStream,
+                name = this.name,
                 url = sourceStream,
                 referer = refererStream,
                 quality = 0,

@@ -56,7 +56,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         return HomePageResponse(sections.mapIndexed { idx, it ->
             val poster = fixUrl(it.selectFirst("h4")!!.attr("style").replace("background-image: url(", "").replace(");", ""))
             val categoryname = it.selectFirst("h4 a")!!.text()
-            val shows = it.select("table tr").not("tr[class='']").not(".audio").map {
+            val shows = it.select("table tr").not("tr[class='']").not(".audio").filter{it -> it.select("a").isNotEmpty()}.map {
                 val lang = flags[it!!.attr("class")].toString()
                 val url = it.selectFirst("a")!!.attr("href")
                 val evento = it.selectFirst("a")!!.text().split(" ", limit = 2)
@@ -77,7 +77,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
                 )
             }
             HomePageList(
-                idx.toString() + categoryname,
+                idx.toString() + " - "+ categoryname,
                 shows,
                 isHorizontalImages = true
             )
@@ -88,11 +88,6 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         // Questa è la pagina con l'iframe di starlive
         // Nell'app qui siamo nella pagina dettaglio
         val loadData = parseJson<LoadData>(url)
-
-        /*val document = app.get(loadData.url).document
-        val referer = httpsify(document.selectFirst("iframe")!!.attr("src"))
-
-        val (sourceStream, refererStream) = parseIframeUrl(url = loadData.url, ref_truelink = referer)*/
 
         return LiveStreamLoadResponse(
             loadData.lang + " " +loadData.eventoName,

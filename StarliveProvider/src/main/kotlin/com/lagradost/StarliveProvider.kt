@@ -5,6 +5,8 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import org.jsoup.nodes.Element
+import com.lagradost.cloudstream3.network.CloudflareKiller
+
 
 
 class StarliveProvider : MainAPI() { // all providers must be an instance of MainAPI
@@ -17,6 +19,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         TvType.Live,
 
         )
+    private val interceptor = CloudflareKiller()
 
     val flags = mapOf(
         "eng" to "\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67\uDB40\uDC7F",
@@ -50,7 +53,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
 
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(mainUrl).document
+        val document = app.get(mainUrl, interceptor = interceptor).document
 
         val elements = document.select("#accordion > div, #accordion > h3")
 
@@ -176,7 +179,7 @@ class StarliveProvider : MainAPI() { // all providers must be an instance of Mai
         callback: (ExtractorLink) -> Unit
     ) {
         
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
         val referer = httpsify(document.selectFirst("iframe")!!.attr("src"))
 
         val (sourceStream, refererStream) = parseIframeUrl(url = url, ref_truelink = referer)
